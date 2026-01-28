@@ -41,7 +41,8 @@ CREATE TABLE attribute_values (
     product_id INT,
     attribute_id INT,
     value VARCHAR(100) NOT NULL,
-    FOREIGN KEY (attribute_id) REFERENCES attributes(id)
+    FOREIGN KEY (attribute_id) REFERENCES attributes(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
 INSERT INTO users(username, email, password_hash) VALUES
