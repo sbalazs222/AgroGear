@@ -16,7 +16,7 @@ CREATE TABLE users (
 
 CREATE TABLE categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE products (
@@ -34,7 +34,6 @@ CREATE TABLE attributes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     attribute_name VARCHAR(100) NOT NULL,
     unit VARCHAR(10)
-    FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
 CREATE TABLE attribute_values (
