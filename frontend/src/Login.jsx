@@ -2,7 +2,7 @@ import { useState } from "react";
 
 function Login(){
     const [formData, setFormData] = useState({
-        username:"",
+        email:"",
         password:""
     })
 
@@ -31,11 +31,21 @@ function Login(){
         <>
         <h1>Bejelentkezés</h1>
 
-        <form onSubmit={HandleSubmit}>
-            <input type="email" placeholder="email" name="email" onChange={HandleChange}/>
-            <input type="password" placeholder="password" name="password" onChange={HandleChange}/>
-            <button type="Submit">Bejelentkezés</button>
-        </form>
+        <Form onSubmit={HandleSubmit}>
+                <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label>Email address</Form.Label>
+                    <Form.Control type="email" placeholder="Enter email" name="email" onChange={HandleChange} />
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control type="password" placeholder="Password" name="password" onChange={HandleChange} />
+                </Form.Group>
+
+                <Button variant="primary" type="submit">
+                    Bejelentkezés
+                </Button>
+            </Form>
         </>
     )
 }
