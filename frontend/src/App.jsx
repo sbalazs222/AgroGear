@@ -12,15 +12,15 @@ function App() {
     <>
       <BrowserRouter>
         <nav>
-          <NavLink to="/">kezdőlap</NavLink>
-          <NavLink to="/Register">Regisztráció</NavLink>
+          <NavLink to="/">kezdőlap</NavLink>{" | "}
+          <NavLink to="/Register">Regisztráció</NavLink>{" | "}
           <NavLink to="/Login">Bejelentkezés</NavLink>
         </nav>
 
         <Routes>
           <Route path='/' element={<Home /> } />
           <Route path='/Register' element={<Register /> } />
-          <Route path='/Login' element={<Login />  } />
+          <Route path='/Login' element={<Login /> } />
         </Routes>
       </BrowserRouter>
     </>
