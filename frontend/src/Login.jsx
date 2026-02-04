@@ -1,4 +1,6 @@
 import { useState } from "react";
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 
 function Login(){
     const [formData, setFormData] = useState({
@@ -11,6 +13,7 @@ function Login(){
         const res = await fetch("http://localhost:3000/auth/login",{
             method:"POST",
             headers:{"Content-Type": "application/json"},
+            credentials: "include",
             body:JSON.stringify(formData)
 
         })

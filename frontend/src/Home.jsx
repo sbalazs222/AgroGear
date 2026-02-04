@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardActions from '@mui/material/CardActions';
+import Form from 'react-bootstrap/Form';
 
 function Home() {
     const [products, setProducts] = useState([])
@@ -13,20 +14,26 @@ function Home() {
     async function fetchProducts() {
         const res = await fetch("http://localhost:3000/auth/products")
         const data = await res.json()
-        if(res.ok){
+        if (res.ok) {
             setProducts(data)
         }
     }
-    
+
     useEffect(() => {
         fetchProducts();
-      }, [])
+    }, [])
 
     return (
         <>
             <h1>Kezdőlap</h1>
+
             {products.map(products => (
                 <>
+                    <Form.Select aria-label="SelectCategory" key={products.id}>
+                        <option>Valassz kategoriát</option>
+                        <option value={products.category}>{products.category}</option>
+                    </Form.Select>
+
                     <Card sx={{ maxWidth: 345 }} key={products.id}>
                         <CardActionArea>
                             <CardMedia
