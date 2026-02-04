@@ -47,3 +47,22 @@ CREATE TABLE attribute_values (
 
 INSERT INTO users(username, email, password_hash) VALUES
 ('admin', 'admin@admin.com', '$argon2i$v=19$m=16,t=2,p=1$TVdYbVBvOVRQU0FwNGU4cw$L5hk3i2OEJG5lcjO4wh2ow');
+
+INSERT INTO categories(name) VALUES
+('Mezőgazdasági gépek'),
+('Kertészeti eszközök'),
+('Öntözőrendszerek');
+
+INSERT INTO attributes(attribute_name, unit) VALUES
+('Teljesítmény', 'LE'),
+('Kapacitás', 'liter'),
+('Súly', 'kg');
+
+INSERT INTO products(name, category_id, description, price, stock) VALUES
+('Traktor', 1, 'Egy erős mezőgazdasági jármű', 15000.00, 5),
+('Vetőgép', 1, 'Magok ültetésére szolgáló gép', 5000.00, 10);
+
+INSERT INTO attribute_values(product_id, attribute_id, value) VALUES
+(1, 1, '100'),
+(1, 3, '3000'),
+(2, 2, '200');
