@@ -9,11 +9,14 @@ function Register(){
 
     async function HandleSubmit(e) {
         e.preventDefault();
-        const res = await fetch("http:localhost:3000/register",{
+        const res = await fetch("http://localhost:3000/auth/register",{
             method:"POST",
             headers:{"Content-Type": "application/json"},
             body:JSON.stringify(formData)
         })
+        if(res.ok){
+            alert("Sikeres regisztráció")
+        }
     }
 
     function HandleChange(e){

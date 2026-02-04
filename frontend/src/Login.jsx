@@ -8,11 +8,15 @@ function Login(){
 
     async function HandleSubmit(e) {
         e.preventDefault();
-        const res = await fetch("http:localhost:3000/register",{
+        const res = await fetch("http://localhost:3000/auth/login",{
             method:"POST",
             headers:{"Content-Type": "application/json"},
             body:JSON.stringify(formData)
+
         })
+        if(res.ok){
+            alert("Sikeres bejelentkezés")
+        }
     }
 
     function HandleChange(e){
@@ -28,7 +32,7 @@ function Login(){
         <h1>Bejelentkezés</h1>
 
         <form onSubmit={HandleSubmit}>
-            <input type="text" placeholder="username" name="username" onChange={HandleChange}/>
+            <input type="email" placeholder="email" name="email" onChange={HandleChange}/>
             <input type="password" placeholder="password" name="password" onChange={HandleChange}/>
             <button type="Submit">Bejelentkezés</button>
         </form>
