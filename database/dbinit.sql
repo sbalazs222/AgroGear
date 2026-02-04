@@ -66,3 +66,24 @@ INSERT INTO attribute_values(product_id, attribute_id, value) VALUES
 (1, 1, '100'),
 (1, 3, '3000'),
 (2, 2, '200');
+
+DELIMITER //
+
+CREATE FUNCTION IF NOT EXISTS magyar_trim(str VARCHAR(255)) RETURNS VARCHAR(255) DETERMINISTIC
+BEGIN
+    DECLARE result VARCHAR(255);
+    SET result = LOWER(str);
+    SET result = REPLACE(result, ' ', '');
+    SET result = REPLACE(result, 'á', 'a');
+    SET result = REPLACE(result, 'é', 'e');
+    SET result = REPLACE(result, 'í', 'i');
+    SET result = REPLACE(result, 'ó', 'o');
+    SET result = REPLACE(result, 'ö', 'o');
+    SET result = REPLACE(result, 'ő', 'o');
+    SET result = REPLACE(result, 'ú', 'u');
+    SET result = REPLACE(result, 'ü', 'u');
+    SET result = REPLACE(result, 'ű', 'u');
+    RETURN result;
+END //
+
+DELIMITER ;
