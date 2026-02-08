@@ -8,20 +8,91 @@ export async function getProductsByCategory(req, res) {
 }
 
 export async function newProduct(req, res) {
-    const { name, description, price, stock, category } = req.body;
-    if (isNaN(price) || isNaN(stock)) {
-        return res.status(400).json({ message: "Price and stock must be numbers" });
-    }
-    const [categoryExists] = await pool.query('SELECT id FROM categories WHERE magyar_trim(name) = ?', [category.toLowerCase().trim()]);
-    if (categoryExists.length != 0 ){
-        const categoryId = categoryExists[0].id;
-        await pool.query('INSERT INTO products (name, description, price, stock, category_id) VALUES (?, ?, ?, ?, ?)', [name, description, price, stock, categoryId]);
-        return res.status(201).json({ message: "Product created successfully" });
-    } else {
-        const [newCategory] = await pool.query('INSERT INTO categories (name) VALUES (?)', [category.toLowerCase().trim()]);
-        const categoryId = newCategory.insertId;
-        await pool.query('INSERT INTO products (name, description, price, stock, category_id) VALUES (?, ?, ?, ?, ?)', [name, description, price, stock, categoryId]);
-        return res.status(201).json({ message: "Product and category created successfully" });
+    const connection = await pool.getConnection();
+    
+    try {
+        // Validate input
+        const { name, description, price, stock, category, attributes } = req.body;
+        
+        if (!name || !description || !category) {
+            return res.status(400).json({ message: "Name, description, and category are required" });
+        }
+        
+        if (isNaN(price) || isNaN(stock) || price < 0 || stock < 0) {
+            return res.status(400).json({ message: "Price and stock must be non-negative numbers" });
+        }
+        
+        if (!Array.isArray(attributes)) {
+            return res.status(400).json({ message: "Attributes must be an array" });
+        }
+
+        await connection.beginTransaction();
+
+        // Check if category exists
+        const [categoryExists] = await connection.query('SELECT id FROM categories WHERE magyar_trim(name) = ?', [category.toLowerCase().trim()]);
+        let categoryId;
+
+        if (categoryExists.length != 0) {
+            categoryId = categoryExists[0].id;
+        } else {
+            // Create category if needed
+            let newCategoryName = category.toLowerCase().trim();
+            newCategoryName = newCategoryName.charAt(0).toUpperCase() + newCategoryName.slice(1);
+            const [categoryResult] = await connection.query('INSERT INTO categories (name) VALUES (?)', [newCategoryName]);
+            categoryId = categoryResult.insertId;
+        }
+
+        // Get existing attributes
+        const [existingAttributes] = await connection.query('SELECT id, attribute_name FROM attributes');
+
+        // Create missing attributes
+        for (const attr of attributes) {
+            const attrName = Object.keys(attr)[0];
+            const attrNameLower = attrName.toLowerCase().trim();
+            
+            const exists = existingAttributes.some(existingAttr => 
+                existingAttr.attribute_name.toLowerCase() === attrNameLower
+            );
+            
+            if (!exists) {
+                const formattedAttrName = attrNameLower.charAt(0).toUpperCase() + attrNameLower.slice(1);
+                const unit = Object.values(attr)[0][1];
+                await connection.query('INSERT INTO attributes (attribute_name, unit) VALUES (?, ?)', [formattedAttrName, unit]);
+            }
+        }
+
+        // Create product
+        const [productResult] = await connection.query(
+            'INSERT INTO products (name, description, price, stock, category_id) VALUES (?, ?, ?, ?, ?)', 
+            [name, description, price, stock, categoryId]
+        );
+        const productId = productResult.insertId;
+
+        // Link attributes to product
+        for (const attr of attributes) {
+            const attrName = Object.keys(attr)[0].toLowerCase().trim();
+            const attrValue = Object.values(attr)[0][0];
+            
+            const [attribute] = await connection.query(
+                'SELECT id FROM attributes WHERE magyar_trim(attribute_name) = ?', 
+                [attrName]
+            );
+            
+            if (attribute.length > 0) {
+                await connection.query(
+                    'INSERT INTO attribute_values (product_id, attribute_id, value) VALUES (?, ?, ?)', 
+                    [productId, attribute[0].id, attrValue]
+                );
+            }
+        }
+
+        await connection.commit();
+        res.status(201).json({ message: "Product created successfully" });
+        
+    } catch (error) {
+        await connection.rollback();
+    } finally {
+        connection.release();
     }
 }
 
