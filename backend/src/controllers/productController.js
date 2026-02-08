@@ -24,3 +24,26 @@ export async function newProduct(req, res) {
         return res.status(201).json({ message: "Product and category created successfully" });
     }
 }
+
+export async function deleteProduct(req, res) {
+    const { id } = req.params;
+    await pool.query('DELETE FROM products WHERE id = ?', [id]);
+    res.status(200).json({ message: "Product deleted successfully" });
+}
+
+export async function sellProduct(req, res) {
+    const { id } = req.params;
+    const { quantity } = req.body;
+    if (isNaN(quantity)) {
+        return res.status(400).json({ message: "Quantity must be a number" });
+    }
+    const [product] = await pool.query('SELECT stock FROM products WHERE id = ?', [id]);
+    if (product.length == 0) {
+        return res.status(404).json({ message: "Product not found" });
+    }
+    if (product[0].stock < quantity) {
+        return res.status(400).json({ message: "Insufficient stock" });
+    }
+    await pool.query('UPDATE products SET stock = stock - ? WHERE id = ?', [quantity, id]);
+    res.status(200).json({ message: "Product sold successfully" });
+}
