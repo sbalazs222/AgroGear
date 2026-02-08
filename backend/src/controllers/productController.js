@@ -9,6 +9,9 @@ export async function getProductsByCategory(req, res) {
 
 export async function newProduct(req, res) {
     const { name, description, price, stock, category } = req.body;
+    if (isNaN(price) || isNaN(stock)) {
+        return res.status(400).json({ message: "Price and stock must be numbers" });
+    }
     const [categoryExists] = await pool.query('SELECT id FROM categories WHERE magyar_trim(name) = ?', [category.toLowerCase().trim()]);
     if (categoryExists.length != 0 ){
         const categoryId = categoryExists[0].id;
