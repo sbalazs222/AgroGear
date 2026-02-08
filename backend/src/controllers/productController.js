@@ -27,8 +27,12 @@ export async function newProduct(req, res) {
 
 export async function deleteProduct(req, res) {
     const { id } = req.params;
+    const [product] = await pool.query('SELECT id FROM products WHERE id = ?', [id]);
+    if (product.length == 0) {
+        return res.status(404).json({ message: "Product not found" });
+    }
     await pool.query('DELETE FROM products WHERE id = ?', [id]);
-    res.status(200).json({ message: "Product deleted successfully" });
+    return res.status(200).json({ message: "Product deleted successfully" });
 }
 
 export async function sellProduct(req, res) {
