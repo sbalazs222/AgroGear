@@ -47,8 +47,8 @@ CREATE TABLE attribute_values (
 
 CREATE TABLE favorites (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    product_id INT,
+    user_id INT ON DELETE CASCADE,
+    product_id INT ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (product_id) REFERENCES products(id)
