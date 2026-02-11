@@ -7,6 +7,26 @@ export async function getProductsByCategory(req, res) {
     res.status(200).json({ message: "Succesful query", data: products });
 }
 
+export async function getProductById(productId) {
+    const [products] = await pool.query('SELECT p.id, p.name, p.description, p.price, p.stock FROM products p WHERE p.id = ?', [productId]);
+    if (products.length == 0) {
+        return null;
+    }
+    const product = products[0];
+    const attributes = await getAttributes(productId);
+    product.attributes = attributes;
+    return product;
+}
+
+export async function getproductData(req, res) {
+    const { id } = req.params;
+    const product = await getProductById(id);
+    if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json({ message: "Successful query", data: product });
+}
+
 export async function newProduct(req, res) {
     const connection = await pool.getConnection();
     
@@ -121,4 +141,25 @@ export async function sellProduct(req, res) {
     }
     await pool.query('UPDATE products SET stock = stock - ? WHERE id = ?', [quantity, id]);
     res.status(200).json({ message: "Product sold successfully" });
+}
+
+export async function setFavourite(req, res) {
+    const { userId, productId } = req.body;
+    if (!userId || !productId) {
+        return res.status(400).json({ message: "User ID and Product ID are required" });
+    }
+    const [existingFavourite] = await pool.query('SELECT id FROM favorites WHERE user_id = ? AND product_id = ?', [userId, productId]);
+    if (existingFavourite.length > 0) {
+        await pool.query('DELETE FROM favorites WHERE id = ?', [existingFavourite[0].id]);
+        return res.status(200).json({ message: "Product removed from favourites successfully" });
+    }
+    await pool.query('INSERT INTO favorites (user_id, product_id) VALUES (?, ?)', [userId, productId]);
+    res.status(200).json({ message: "Product added to favourites successfully" });
+}
+
+export async function getAttributes(productId) {
+    const [attributes] = await pool.query(
+        'SELECT a.attribute_name, a.unit, av.value FROM attributes a INNER JOIN attribute_values av ON a.id = av.attribute_id WHERE av.product_id = ?', [productId]
+    );
+    return attributes;
 }
