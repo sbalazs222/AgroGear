@@ -88,6 +88,9 @@ INSERT INTO attribute_values(product_id, attribute_id, value) VALUES
 INSERT INTO favorites(user_id, product_id) VALUES
 (1, 1);
 
+INSERT INTO orders(user_id, products, total_price) VALUES
+(1, '[{"name": "Traktor", "quantity": 1, "price": 15000.00}, {"name": "Vetőgép", "quantity": 2, "price": 5000.00}]', 25000.00);
+
 DELIMITER //
 
 CREATE FUNCTION IF NOT EXISTS magyar_trim(str VARCHAR(255)) RETURNS VARCHAR(255) DETERMINISTIC
