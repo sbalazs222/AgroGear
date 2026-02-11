@@ -45,6 +45,15 @@ CREATE TABLE attribute_values (
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
+CREATE TABLE favorites (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    product_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+); 
+
 INSERT INTO users(username, email, password_hash) VALUES
 ('admin', 'admin@admin.com', '$argon2i$v=19$m=16,t=2,p=1$TVdYbVBvOVRQU0FwNGU4cw$L5hk3i2OEJG5lcjO4wh2ow');
 
@@ -66,6 +75,9 @@ INSERT INTO attribute_values(product_id, attribute_id, value) VALUES
 (1, 1, '100'),
 (1, 3, '3000'),
 (2, 2, '200');
+
+INSERT INTO favorites(user_id, product_id) VALUES
+(1, 1);
 
 DELIMITER //
 
