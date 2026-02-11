@@ -45,5 +45,57 @@ CREATE TABLE attribute_values (
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
+CREATE TABLE favorites (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT ON DELETE CASCADE,
+    product_id INT ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+); 
+
 INSERT INTO users(username, email, password_hash) VALUES
 ('admin', 'admin@admin.com', '$argon2i$v=19$m=16,t=2,p=1$TVdYbVBvOVRQU0FwNGU4cw$L5hk3i2OEJG5lcjO4wh2ow');
+
+INSERT INTO categories(name) VALUES
+('Mezőgazdasági gépek'),
+('Kertészeti eszközök'),
+('Öntözőrendszerek');
+
+INSERT INTO attributes(attribute_name, unit) VALUES
+('Teljesítmény', 'LE'),
+('Kapacitás', 'liter'),
+('Súly', 'kg');
+
+INSERT INTO products(name, category_id, description, price, stock) VALUES
+('Traktor', 1, 'Egy erős mezőgazdasági jármű', 15000.00, 5),
+('Vetőgép', 1, 'Magok ültetésére szolgáló gép', 5000.00, 10);
+
+INSERT INTO attribute_values(product_id, attribute_id, value) VALUES
+(1, 1, '100'),
+(1, 3, '3000'),
+(2, 2, '200');
+
+INSERT INTO favorites(user_id, product_id) VALUES
+(1, 1);
+
+DELIMITER //
+
+CREATE FUNCTION IF NOT EXISTS magyar_trim(str VARCHAR(255)) RETURNS VARCHAR(255) DETERMINISTIC
+BEGIN
+    DECLARE result VARCHAR(255);
+    SET result = LOWER(str);
+    SET result = REPLACE(result, ' ', '');
+    SET result = REPLACE(result, 'á', 'a');
+    SET result = REPLACE(result, 'é', 'e');
+    SET result = REPLACE(result, 'í', 'i');
+    SET result = REPLACE(result, 'ó', 'o');
+    SET result = REPLACE(result, 'ö', 'o');
+    SET result = REPLACE(result, 'ő', 'o');
+    SET result = REPLACE(result, 'ú', 'u');
+    SET result = REPLACE(result, 'ü', 'u');
+    SET result = REPLACE(result, 'ű', 'u');
+    RETURN result;
+END //
+
+DELIMITER ;

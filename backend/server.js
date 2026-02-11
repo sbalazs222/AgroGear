@@ -5,6 +5,7 @@ import { colorLog, errorLog } from "psgutil";
 
 import env from "./src/config/env.js";
 import authRoutes from "./src/routes/authRoutes.js";
+import productRoutes from "./src/routes/productRoutes.js";
 
 const app = express();
 app.use(cors({
@@ -16,6 +17,7 @@ app.use(cookieParser());
 app.use(colorLog);
 
 app.use("/auth", authRoutes);
+app.use("/products", productRoutes);
 
 app.listen(env.PORT, () => {
   console.log(`Server running on port ${env.PORT}`);
