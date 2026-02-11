@@ -1,6 +1,6 @@
 import express from "express";
 import { validateRequiredFields, validateFieldCount, validateInputIsArray } from "psgutil";
-import { getProductsByCategory, newProduct, deleteProduct, sellProduct, getOrders } from "../controllers/productController.js";
+import { getProductsByCategory, newProduct, deleteProduct, sellProduct, getOrders, setFavourite } from "../controllers/productController.js";
 import { authenticateToken } from "../middlewares/auth.js";
 
 const router = express.Router();
@@ -10,5 +10,6 @@ router.post("/", authenticateToken, validateRequiredFields(["name", "description
 router.delete("/:id", authenticateToken, deleteProduct);
 router.post("/:id/sell", authenticateToken, validateRequiredFields(["quantity"]), validateFieldCount(1), sellProduct);
 router.get("/orders", authenticateToken, getOrders);
+router.post("/:id/favourite", authenticateToken, setFavourite);
 
 export default router;
