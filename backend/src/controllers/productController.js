@@ -7,7 +7,7 @@ export async function getProductsByCategory(req, res) {
     res.status(200).json({ message: "Succesful query", data: products });
 }
 
-export async function getProductById(productId) {
+async function getProductById(productId) {
     const [products] = await pool.query('SELECT p.id, p.name, p.description, p.price, p.stock FROM products p WHERE p.id = ?', [productId]);
     if (products.length == 0) {
         return null;
@@ -157,7 +157,7 @@ export async function setFavourite(req, res) {
     res.status(200).json({ message: "Product added to favourites successfully" });
 }
 
-export async function getAttributes(productId) {
+async function getAttributes(productId) {
     const [attributes] = await pool.query(
         'SELECT a.attribute_name, a.unit, av.value FROM attributes a INNER JOIN attribute_values av ON a.id = av.attribute_id WHERE av.product_id = ?', [productId]
     );
