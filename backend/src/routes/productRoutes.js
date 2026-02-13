@@ -1,6 +1,6 @@
 import express from "express";
 import { validateRequiredFields, validateFieldCount, validateInputIsArray } from "psgutil";
-import { getProductsByCategory, getproductData, newProduct, deleteProduct, sellProduct, getOrders, setFavourite } from "../controllers/productController.js";
+import { getProductsByCategory, getproductData, newProduct, deleteProduct, sellProduct, setFavourite } from "../controllers/productController.js";
 import { authenticateToken } from "../middlewares/auth.js";
 
 const router = express.Router();
