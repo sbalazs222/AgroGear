@@ -47,12 +47,21 @@ CREATE TABLE attribute_values (
 
 CREATE TABLE favorites (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT ON DELETE CASCADE,
-    product_id INT ON DELETE CASCADE,
+    user_id INT,
+    product_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (product_id) REFERENCES products(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 ); 
+
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    products JSON NOT NULL, 
+    total_price DECIMAL(10, 2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
 
 INSERT INTO users(username, email, password_hash) VALUES
 ('admin', 'admin@admin.com', '$argon2i$v=19$m=16,t=2,p=1$TVdYbVBvOVRQU0FwNGU4cw$L5hk3i2OEJG5lcjO4wh2ow');
@@ -78,6 +87,9 @@ INSERT INTO attribute_values(product_id, attribute_id, value) VALUES
 
 INSERT INTO favorites(user_id, product_id) VALUES
 (1, 1);
+
+INSERT INTO orders(user_id, products, total_price) VALUES
+(1, '[{"name": "Traktor", "quantity": 1, "price": 15000.00}, {"name": "Vetőgép", "quantity": 2, "price": 5000.00}]', 25000.00);
 
 DELIMITER //
 
