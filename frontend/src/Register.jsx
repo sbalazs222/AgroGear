@@ -4,8 +4,8 @@ import Form from 'react-bootstrap/Form';
 
 function Register() {
     const [formData, setFormData] = useState({
-        email: "",
         username: "",
+        email: "",
         password: ""
     })
 
@@ -36,13 +36,13 @@ function Register() {
 
             <Form onSubmit={HandleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" placeholder="Enter email" name="email" onChange={HandleChange} />
+                    <Form.Label>Username</Form.Label>
+                    <Form.Control type="text" placeholder="Enter username" name="username" onChange={HandleChange} />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Username</Form.Label>
-                    <Form.Control type="text" placeholder="Enter username" name="username" onChange={HandleChange} />
+                    <Form.Label>Email address</Form.Label>
+                    <Form.Control type="email" placeholder="Enter email" name="email" onChange={HandleChange} />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
