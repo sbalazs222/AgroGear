@@ -144,14 +144,12 @@ export async function sellBasket(req, res) {
         return res.status(400).json({ message: "No products provided" });
     }
     const [getStocks] = await pool.query('SELECT id, stock FROM products WHERE id IN (?)', [products.map(p => p.id)]);
-    console.log(getStocks);
     for (const item of products) {
         const product = await getProductById(item.id);
         if (!product) {
             return res.status(404).json({ message: `Product with ID ${item.id} not found` });
         }
         const stock = getStocks.find(p => p.id === item.id)?.stock || 0;
-        console.log(`Product ID: ${item.id}, Requested Quantity: ${item.quantity}, Available Stock: ${stock}`);
         if (stock < item.quantity) {
             return res.status(400).json({ message: `Insufficient stock for product ${product.name}` });
         }
