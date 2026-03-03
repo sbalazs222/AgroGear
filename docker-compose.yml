@@ -3,6 +3,7 @@ services:
     build:
       context: ./backend      
       dockerfile: Dockerfile
+    container_name: agrogear-api
     restart: always
     networks:
       - shared-proxy
