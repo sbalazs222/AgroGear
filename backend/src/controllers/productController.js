@@ -144,6 +144,7 @@ export async function sellBasket(req, res) {
         return res.status(400).json({ message: "No products provided" });
     }
     const [getStocks] = await pool.query('SELECT id, stock FROM products WHERE id IN (?)', [products.map(p => p.id)]);
+    console.log(getStocks);
     for (const item of products) {
         const product = await getProductById(item.id);
         if (!product) {
