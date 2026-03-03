@@ -139,7 +139,7 @@ export async function deleteProduct(req, res) {
 
 export async function sellBasket(req, res) {
     const { products } = req.body;
-    const totalPrice = 0;
+    let totalPrice = 0;
     if (products.length == 0) {
         return res.status(400).json({ message: "No products provided" });
     }
