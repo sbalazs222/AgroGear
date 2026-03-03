@@ -7,6 +7,7 @@ import { authenticateToken } from "./src/middlewares/auth.js";
 import env from "./src/config/env.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import productRoutes from "./src/routes/productRoutes.js";
+import userRoutes from "./src/routes/userRoutes.js";
 import { getOrders } from "./src/controllers/productController.js";
 
 const app = express();
@@ -20,6 +21,7 @@ app.use(colorLog);
 
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
+app.use("/user", userRoutes);
 app.get("/orders", authenticateToken, getOrders);
 
 app.listen(env.PORT, () => {
