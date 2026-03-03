@@ -154,27 +154,6 @@ export async function sellProduct(req, res) {
     res.status(200).json({ message: "Product sold successfully" });
 }
 
-export async function getFavourites(req, res) {
-    const [favourites] = await pool.query(
-        'SELECT p.id, p.name, p.description, p.price, p.stock FROM products p INNER JOIN favorites f ON p.id = f.product_id WHERE f.user_id = ?', [req.user.id]
-    );
-    res.status(200).json({ message: "Successful query", data: favourites });
-}
-
-export async function setFavourite(req, res) {
-    const { productId } = req.body;
-    if (!productId) {
-        return res.status(400).json({ message: "Product ID is required" });
-    }
-    const [existingFavourite] = await pool.query('SELECT id FROM favorites WHERE user_id = ? AND product_id = ?', [req.user.id, productId]);
-    if (existingFavourite.length > 0) {
-        await pool.query('DELETE FROM favorites WHERE id = ?', [existingFavourite[0].id]);
-        return res.status(200).json({ message: "Product removed from favourites successfully" });
-    }
-    await pool.query('INSERT INTO favorites (user_id, product_id) VALUES (?, ?)', [req.user.id, productId]);
-    res.status(200).json({ message: "Product added to favourites successfully" });
-}
-
 async function getAttributes(productId) {
     const [attributes] = await pool.query(
         'SELECT a.attribute_name, a.unit, av.value FROM attributes a INNER JOIN attribute_values av ON a.id = av.attribute_id WHERE av.product_id = ?', [productId]
