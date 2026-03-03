@@ -12,3 +12,10 @@ export function authenticateToken(req, res, next){
   req.user.admin = decoded.admin == 1;
   next();
 }
+
+export function requireAdmin(req, res, next) {
+  if (!req.user.admin) {
+    return res.status(403).json({ message: "Forbidden" });
+  }
+  next();
+}
