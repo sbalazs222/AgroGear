@@ -27,14 +27,14 @@ export async function login(req, res) {
     return res.status(400).json({ message: "Invalid input" });
   }
 
-  const [user] = await pool.query('SELECT id, username, password_hash FROM users WHERE email = ?', [email]);
+  const [user] = await pool.query('SELECT id, username, password_hash, is_admin FROM users WHERE email = ?', [email]);
   if (user.length === 0) {
     return res.status(401).json({ message: "Invalid email or password" });
   }
   if (!await argon2.verify(user[0].password_hash, password)) {
     return res.status(401).json({ message: "Invalid email or password" });
   }
-  const token = generateToken({ id: user[0].id, username: user[0].username });
+  const token = generateToken({ id: user[0].id, username: user[0].username, admin: user[0].is_admin || 0 });
   res.cookie("token", token, { httpOnly: true, secure: true, sameSite: 'strict' });
   res.status(200).json({ message: "Login successful" });
 }

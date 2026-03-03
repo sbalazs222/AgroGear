@@ -9,5 +9,6 @@ export function authenticateToken(req, res, next){
     return res.status(401).json({ message: "Unauthorized" });
   }
   req.user = decoded;
+  req.user.admin = decoded.admin == 1;
   next();
 }
