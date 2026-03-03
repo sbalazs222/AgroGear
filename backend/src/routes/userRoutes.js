@@ -1,8 +1,7 @@
 import express from "express";
 
 import { authenticateToken } from "../middlewares/auth.js";
-import { getUserData } from "../controllers/userController.js";
-import { getOrders, setFavourite, getFavourites } from "../controllers/productController.js";
+import { getUserData, getOrders, getFavourites, setFavourite  } from "../controllers/userController.js";
 
 const router = express.Router();
 

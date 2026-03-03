@@ -160,13 +160,3 @@ async function getAttributes(productId) {
     );
     return attributes;
 }
-
-export async function getOrders(req, res) {
-    const [orders] = await pool.query(
-        'SELECT id AS order_id, products, total_price, created_at AS order_date FROM orders WHERE user_id = ?', [req.user.id]
-    );
-    orders.forEach(order => {
-        order.products = JSON.parse(order.products);
-    });
-    res.status(200).json({ message: "Successful query", data: orders });
-}

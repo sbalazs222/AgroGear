@@ -25,3 +25,13 @@ export async function setFavourite(req, res) {
     await pool.query('INSERT INTO favorites (user_id, product_id) VALUES (?, ?)', [req.user.id, productId]);
     res.status(200).json({ message: "Product added to favourites successfully" });
 }
+
+export async function getOrders(req, res) {
+    const [orders] = await pool.query(
+        'SELECT id AS order_id, products, total_price, created_at AS order_date FROM orders WHERE user_id = ?', [req.user.id]
+    );
+    orders.forEach(order => {
+        order.products = JSON.parse(order.products);
+    });
+    res.status(200).json({ message: "Successful query", data: orders });
+}
