@@ -143,12 +143,14 @@ export async function sellBasket(req, res) {
     if (products.length == 0) {
         return res.status(400).json({ message: "No products provided" });
     }
+    const [getStocks] = await pool.query('SELECT id, stock FROM products WHERE id IN (?)', [products.map(p => p.id)]);
     for (const item of products) {
         const product = await getProductById(item.id);
         if (!product) {
             return res.status(404).json({ message: `Product with ID ${item.id} not found` });
         }
-        if (product.stock < item.quantity) {
+        const stock = getStocks.find(p => p.id === item.id)?.stock || 0;
+        if (stock < item.quantity) {
             return res.status(400).json({ message: `Insufficient stock for product ${product.name}` });
         }
         await pool.query('UPDATE products SET stock = stock - ? WHERE id = ?', [item.quantity, item.id]);
