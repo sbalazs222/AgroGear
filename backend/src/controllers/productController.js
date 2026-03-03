@@ -18,6 +18,17 @@ async function getProductById(productId) {
     return product;
 }
 
+export async function searchByName(req, res) {
+    const { name } = req.query;
+    if (!name) {
+        return res.status(400).json({ message: "Name parameter is required" });
+    }
+    const [products] = await pool.query(
+        'SELECT id, name, description, price, stock FROM products WHERE magyar_trim(name) LIKE ?', [name.toLowerCase().trim() + '%']
+    );
+    res.status(200).json({ message: "Successful query", data: products });
+}
+
 export async function getproductData(req, res) {
     const { id } = req.params;
     const product = await getProductById(id);
@@ -141,6 +152,13 @@ export async function sellProduct(req, res) {
     }
     await pool.query('UPDATE products SET stock = stock - ? WHERE id = ?', [quantity, id]);
     res.status(200).json({ message: "Product sold successfully" });
+}
+
+export async function getFavourites(req, res) {
+    const [favourites] = await pool.query(
+        'SELECT p.id, p.name, p.description, p.price, p.stock FROM products p INNER JOIN favorites f ON p.id = f.product_id WHERE f.user_id = ?', [req.user.id]
+    );
+    res.status(200).json({ message: "Successful query", data: favourites });
 }
 
 export async function setFavourite(req, res) {
