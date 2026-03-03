@@ -11,6 +11,7 @@ CREATE TABLE users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
+    is_admin BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -63,8 +64,8 @@ CREATE TABLE orders (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-INSERT INTO users(username, email, password_hash) VALUES
-('admin', 'admin@admin.com', '$argon2i$v=19$m=16,t=2,p=1$TVdYbVBvOVRQU0FwNGU4cw$L5hk3i2OEJG5lcjO4wh2ow');
+INSERT INTO users(username, email, password_hash, is_admin) VALUES
+('admin', 'admin@admin.com', '$argon2i$v=19$m=16,t=2,p=1$TVdYbVBvOVRQU0FwNGU4cw$L5hk3i2OEJG5lcjO4wh2ow', TRUE);
 
 INSERT INTO categories(name) VALUES
 ('Mezőgazdasági gépek'),
