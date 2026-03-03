@@ -14,9 +14,11 @@ services:
       - DB_NAME=${DB_NAME}
       - PORT=${PORT}
       - JWT_SECRET=${JWT_SECRET}
+      - API_HOST=${API_HOST}
+      - PREFIX=${PREFIX}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.agrogear.rule=Host(`api.satna.hu`) && PathPrefix(`/agrogear`)"
+      - "traefik.http.routers.agrogear.rule=Host(`${API_HOST}`) && PathPrefix(`/${PREFIX}`)"
       - "traefik.http.routers.agrogear.entrypoints=websecure"
       - "traefik.http.routers.agrogear.tls.certresolver=myresolver"
       - "traefik.http.services.agrogear.loadbalancer.server.port=9876"
