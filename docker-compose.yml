@@ -1,0 +1,23 @@
+services:
+  api:
+    build:
+      context: ./backend      
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      - shared-proxy
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.agrogear.rule=Host(`api.satna.hu/agrogear`)"
+      - "traefik.http.routers.agrogear.entrypoints=websecure"
+      - "traefik.http.routers.agrogear.tls.certresolver=myresolver"
+      - "traefik.http.services.agrogear.loadbalancer.server.port=3000"
+
+networks:
+  shared-proxy:
+    external: true
