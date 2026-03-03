@@ -3,12 +3,12 @@ import pool from "../config/db.js";
 export async function getProductsByCategory(req, res) {
     const { category } = req.params;
     const formatedCategory = category.toLowerCase().trim();
-    const [products] = await pool.query('SELECT p.id, p.name, p.description, p.price, p.stock FROM products p INNER JOIN categories c ON c.id = p.category_id WHERE magyar_trim(c.name) = ?', [formatedCategory]);
+    const [products] = await pool.query('SELECT p.id, p.name, p.description, p.price, p.stock, p.image_url FROM products p INNER JOIN categories c ON c.id = p.category_id WHERE magyar_trim(c.name) = ?', [formatedCategory]);
     res.status(200).json({ message: "Succesful query", data: products });
 }
 
 async function getProductById(productId) {
-    const [products] = await pool.query('SELECT p.id, p.name, p.description, p.price, p.stock FROM products p WHERE p.id = ?', [productId]);
+    const [products] = await pool.query('SELECT p.id, p.name, p.description, p.price, p.stock, p.image_url FROM products p WHERE p.id = ?', [productId]);
     if (products.length == 0) {
         return null;
     }
@@ -29,19 +29,19 @@ export async function getproductData(req, res) {
 
 export async function newProduct(req, res) {
     const connection = await pool.getConnection();
-    
+
     try {
         // Validate input
-        const { name, description, price, stock, category, attributes } = req.body;
-        
+        const { name, description, price, stock, category, attributes, image_url } = req.body;
+
         if (!name || !description || !category) {
             return res.status(400).json({ message: "Name, description, and category are required" });
         }
-        
+
         if (isNaN(price) || isNaN(stock) || price < 0 || stock < 0) {
             return res.status(400).json({ message: "Price and stock must be non-negative numbers" });
         }
-        
+
         if (!Array.isArray(attributes)) {
             return res.status(400).json({ message: "Attributes must be an array" });
         }
@@ -69,11 +69,11 @@ export async function newProduct(req, res) {
         for (const attr of attributes) {
             const attrName = Object.keys(attr)[0];
             const attrNameLower = attrName.toLowerCase().trim();
-            
-            const exists = existingAttributes.some(existingAttr => 
+
+            const exists = existingAttributes.some(existingAttr =>
                 existingAttr.attribute_name.toLowerCase() === attrNameLower
             );
-            
+
             if (!exists) {
                 const formattedAttrName = attrNameLower.charAt(0).toUpperCase() + attrNameLower.slice(1);
                 const unit = Object.values(attr)[0][1];
@@ -83,8 +83,8 @@ export async function newProduct(req, res) {
 
         // Create product
         const [productResult] = await connection.query(
-            'INSERT INTO products (name, description, price, stock, category_id) VALUES (?, ?, ?, ?, ?)', 
-            [name, description, price, stock, categoryId]
+            'INSERT INTO products (name, description, price, stock, category_id, image_url) VALUES (?, ?, ?, ?, ?, ?)',
+            [name, description, price, stock, categoryId, image_url || null]
         );
         const productId = productResult.insertId;
 
@@ -92,15 +92,15 @@ export async function newProduct(req, res) {
         for (const attr of attributes) {
             const attrName = Object.keys(attr)[0].toLowerCase().trim();
             const attrValue = Object.values(attr)[0][0];
-            
+
             const [attribute] = await connection.query(
-                'SELECT id FROM attributes WHERE magyar_trim(attribute_name) = ?', 
+                'SELECT id FROM attributes WHERE magyar_trim(attribute_name) = ?',
                 [attrName]
             );
-            
+
             if (attribute.length > 0) {
                 await connection.query(
-                    'INSERT INTO attribute_values (product_id, attribute_id, value) VALUES (?, ?, ?)', 
+                    'INSERT INTO attribute_values (product_id, attribute_id, value) VALUES (?, ?, ?)',
                     [productId, attribute[0].id, attrValue]
                 );
             }
@@ -108,7 +108,7 @@ export async function newProduct(req, res) {
 
         await connection.commit();
         res.status(201).json({ message: "Product created successfully" });
-        
+
     } catch (error) {
         await connection.rollback();
     } finally {

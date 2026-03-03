@@ -1,56 +1,47 @@
 import { useState } from "react";
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
+import { Button, Form, Container, Card } from 'react-bootstrap';
+import { useNavigate } from "react-router-dom";
 
-function Login(){
-    const [formData, setFormData] = useState({
-        email:"",
-        password:""
-    })
+function Login({ setIsLoggedIn }) {
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({ email: "", password: "" });
 
     async function HandleSubmit(e) {
         e.preventDefault();
-        const res = await fetch("http://localhost:3000/auth/login",{
-            method:"POST",
-            headers:{"Content-Type": "application/json"},
-            credentials: "include",
-            body:JSON.stringify(formData)
-
-        })
-        if(res.ok){
-            alert("Sikeres bejelentkezés")
-        }
+        try {
+            const res = await fetch("http://localhost:3000/auth/login", {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                credentials: "include", body: JSON.stringify(formData)
+            });
+            if (res.ok) { setIsLoggedIn(true); navigate("/"); } 
+            else { alert("Hibás adatok!"); }
+        } catch (err) { alert("Hálózati hiba!"); }
     }
 
-    function HandleChange(e){
-        e.preventDefault();
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        })
-    }
-
-    return(
-        <>
-        <h1>Bejelentkezés</h1>
-
-        <Form onSubmit={HandleSubmit}>
-                <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" placeholder="Enter email" name="email" onChange={HandleChange} />
-                </Form.Group>
-
-                <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" name="password" onChange={HandleChange} />
-                </Form.Group>
-
-                <Button variant="primary" type="submit">
-                    Bejelentkezés
-                </Button>
-            </Form>
-        </>
-    )
+    return (
+        <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "80vh" }}>
+            <Card className="agro-card p-4 shadow" style={{ width: "100%", maxWidth: "400px" }}>
+                <div className="text-center mb-4">
+                  <h2 className="fw-bold text-success">Üdv újra!</h2>
+                  <p className="text-muted">Jelentkezzen be fiókjába</p>
+                </div>
+                <Form onSubmit={HandleSubmit}>
+                    <Form.Group className="mb-3">
+                        <Form.Label className="small fw-bold">Email cím</Form.Label>
+                        <Form.Control type="email" placeholder="pelda@agrogear.hu" name="email" className="rounded-pill px-3"
+                            onChange={(e) => setFormData({...formData, email: e.target.value})} required />
+                    </Form.Group>
+                    <Form.Group className="mb-4">
+                        <Form.Label className="small fw-bold">Jelszó</Form.Label>
+                        <Form.Control type="password" placeholder="••••••••" name="password" className="rounded-pill px-3"
+                            onChange={(e) => setFormData({...formData, password: e.target.value})} required />
+                    </Form.Group>
+                    <Button variant="success" type="submit" className="w-100 rounded-pill py-2 fw-bold shadow-sm">
+                        Bejelentkezés
+                    </Button>
+                </Form>
+            </Card>
+        </Container>
+    );
 }
-
 export default Login;
