@@ -137,21 +137,22 @@ export async function deleteProduct(req, res) {
     return res.status(200).json({ message: "Product deleted successfully" });
 }
 
-export async function sellProduct(req, res) {
-    const { id } = req.params;
-    const { quantity } = req.body;
-    if (isNaN(quantity)) {
-        return res.status(400).json({ message: "Quantity must be a number" });
+export async function sellBasket(req, res) {
+    const { products } = req.body;
+    const totalPrice = 0;
+    for (const item of products) {
+        const product = await getProductById(item.id);
+        if (!product) {
+            return res.status(404).json({ message: `Product with ID ${item.id} not found` });
+        }
+        if (product.stock < item.quantity) {
+            return res.status(400).json({ message: `Insufficient stock for product ${product.name}` });
+        }
+        await pool.query('UPDATE products SET stock = stock - ? WHERE id = ?', [item.quantity, item.id]);
+        totalPrice += product.price * item.quantity;
     }
-    const [product] = await pool.query('SELECT stock FROM products WHERE id = ?', [id]);
-    if (product.length == 0) {
-        return res.status(404).json({ message: "Product not found" });
-    }
-    if (product[0].stock < quantity) {
-        return res.status(400).json({ message: "Insufficient stock" });
-    }
-    await pool.query('UPDATE products SET stock = stock - ? WHERE id = ?', [quantity, id]);
-    res.status(200).json({ message: "Product sold successfully" });
+    await pool.query('INSERT INTO orders (user_id, products, total_price) VALUES (?, ?, ?)', [req.user.id, JSON.stringify(products), totalPrice]);
+    res.status(200).json({ message: "Basket checked out successfully" });
 }
 
 async function getAttributes(productId) {
