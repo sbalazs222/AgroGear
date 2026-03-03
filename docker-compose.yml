@@ -19,7 +19,7 @@ services:
       - "traefik.http.routers.agrogear.rule=Host(`api.satna.hu`) && PathPrefix(`/agrogear`)"
       - "traefik.http.routers.agrogear.entrypoints=websecure"
       - "traefik.http.routers.agrogear.tls.certresolver=myresolver"
-      - "traefik.http.services.agrogear.loadbalancer.server.port=3000"
+      - "traefik.http.services.agrogear.loadbalancer.server.port=9876"
 
       - "traefik.http.middlewares.strip-agrogear.stripprefix.prefixes=/agrogear"
       - "traefik.http.routers.agrogear.middlewares=strip-agrogear"
