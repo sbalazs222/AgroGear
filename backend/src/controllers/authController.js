@@ -35,7 +35,7 @@ export async function login(req, res) {
     return res.status(401).json({ message: "Invalid email or password" });
   }
   const token = generateToken({ id: user[0].id, username: user[0].username });
-  res.cookie("token", token, { httpOnly: true, secure: false, sameSite: 'strict' });
+  res.cookie("token", token, { httpOnly: true, secure: true, sameSite: 'strict' });
   res.status(200).json({ message: "Login successful" });
 }
 
